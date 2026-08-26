@@ -39,12 +39,20 @@ This repository serves as the official compilation workspace for DAA Lab exercis
   <img width="953" height="389" alt="Screenshot 2026-07-17 001117" src="https://github.com/user-attachments/assets/cbf7a5e3-5900-4ace-965d-4a84b9172712" />
 
 ---
-<img width="494" height="261" alt="image" src="https://github.com/user-attachments/assets/8c8f4d2f-0a12-4d44-a6d3-4fcfd618e861" />
-<img width="490" height="281" alt="image" src="https://github.com/user-attachments/assets/dbad3ba4-1a1b-4ca2-9eda-0284dd2d1462" />
-<img width="470" height="436" alt="image" src="https://github.com/user-attachments/assets/ba7dc42c-1045-4d2a-90c8-2125e2d0c0f7" />
-<img width="417" height="389" alt="image" src="https://github.com/user-attachments/assets/99b318e5-16d5-4daf-ac91-d33e81011651" />
-<img width="548" height="272" alt="image" src="https://github.com/user-attachments/assets/d0c44c6a-091c-4dad-bc23-08f4a57d6e74" />
-<img width="588" height="146" alt="image" src="https://github.com/user-attachments/assets/b684b0af-5b3d-465f-b0a0-66974d4fe491" />
+Ex 6
+<img width="646" height="335" alt="image" src="https://github.com/user-attachments/assets/048fc961-7593-444d-90ba-ddf02c7ecc8a" />
+
+Ex 7
+
+ex8
+
+
+ex9
+
+
+ex10
+
+
 
 
 
