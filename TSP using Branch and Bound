@@ -1,0 +1,133 @@
+# Experiment 8: Travelling Salesman Problem using Branch and Bound
+
+import heapq
+import copy
+
+INF = float('inf')
+
+def reduce_matrix(mat):
+    """Reduce rows and columns and return reduced matrix and reduction cost."""
+    m = [row[:] for row in mat]
+    n = len(m)
+    cost = 0
+
+    # Row reduction
+    for i in range(n):
+        row_min = min(m[i])
+        if row_min != INF and row_min != 0:
+            cost += row_min
+            for j in range(n):
+                if m[i][j] != INF:
+                    m[i][j] -= row_min
+
+    # Column reduction
+    for j in range(n):
+        col_min = min(m[i][j] for i in range(n))
+        if col_min != INF and col_min != 0:
+            cost += col_min
+            for i in range(n):
+                if m[i][j] != INF:
+                    m[i][j] -= col_min
+    return m, cost
+
+def tsp_branch_bound(cost_matrix):
+    n = len(cost_matrix)
+    # Initial lower bound: reduce the whole matrix
+    reduced, lb = reduce_matrix(cost_matrix)
+    # State: (bound, cost_so_far, path, visited_bitmask, reduced_matrix)
+    # We'll use a heap of tuples: (bound, cost, path, mask, reduced_mat)
+    start_mask = 1  # city 0 visited
+    start_path = [0]
+    heap = []
+    heapq.heappush(heap, (lb, 0, start_path, start_mask, reduced))
+    best_cost = INF
+    best_path = None
+
+    while heap:
+        bound, cost_so_far, path, mask, mat = heapq.heappop(heap)
+        current = path[-1]
+
+        # Prune if bound >= best_cost
+        if bound >= best_cost:
+            continue
+
+        # If all cities visited, complete the tour
+        if len(path) == n:
+            # Add return edge to city 0
+            if mat[current][0] != INF:
+                total = cost_so_far + mat[current][0]
+                if total < best_cost:
+                    best_cost = total
+                    best_path = path + [0]
+            continue
+
+        # Explore unvisited cities
+        for nxt in range(n):
+            if not (mask & (1 << nxt)):
+                # Create a copy of the reduced matrix and set current->nxt to INF
+                new_mat = [row[:] for row in mat]
+                # Set row current and column nxt to INF (to avoid using these)
+                for j in range(n):
+                    new_mat[current][j] = INF
+                for i in range(n):
+                    new_mat[i][nxt] = INF
+                # Also set the return to start edge? Not yet; we'll handle at the end.
+                # Set new_mat[nxt][0]? Actually, we can leave it; it will be considered when completing.
+                # But to prevent cycles in partial paths, set new_mat[nxt][0] to INF? 
+                # Actually, we should not allow returning to 0 before all cities are visited.
+                # We can set new_mat[nxt][0] = INF for safety.
+                new_mat[nxt][0] = INF
+                # Now reduce the new matrix
+                reduced_new, add_cost = reduce_matrix(new_mat)
+                new_cost = cost_so_far + mat[current][nxt]
+                new_bound = new_cost + reduced_new
+                new_mask = mask | (1 << nxt)
+                new_path = path + [nxt]
+                heapq.heappush(heap, (new_bound, new_cost, new_path, new_mask, reduced_new))
+
+    return best_path, best_cost
+
+def tsp_brute_force(cost, n):
+    """Brute force for small n verification."""
+    from itertools import permutations
+    cities = list(range(1, n))
+    best_cost = INF
+    best_path = None
+    for perm in permutations(cities):
+        path = [0] + list(perm) + [0]
+        c = sum(cost[path[i]][path[i+1]] for i in range(n))
+        if c < best_cost:
+            best_cost = c
+            best_path = path
+    return best_path, best_cost
+
+def main():
+    # 5-city cost matrix
+    cost = [
+        [INF, 10, 8, 9, 7],
+        [10, INF, 10, 5, 6],
+        [8, 10, INF, 8, 9],
+        [9, 5, 8, INF, 6],
+        [7, 6, 9, 6, INF]
+    ]
+    cities = ['A', 'B', 'C', 'D', 'E']
+    n = 5
+
+    print("5-City TSP - Cost Matrix:")
+    print(f"{'':>4}", ' '.join(f'{c:>5}' for c in cities))
+    for i, row in enumerate(cost):
+        r = ['INF' if x == INF else str(x) for x in row]
+        print(f'{cities[i]:>4}', ' '.join(f'{v:>5}' for v in r))
+
+    # Branch and Bound solution
+    bnb_path, bnb_cost = tsp_branch_bound(cost)
+    print(f"\nBranch & Bound Optimal Tour: {' -> '.join(cities[i] for i in bnb_path)}")
+    print(f"Minimum Cost: {bnb_cost}")
+
+    # Brute force verification (optional)
+    bf_path, bf_cost = tsp_brute_force(cost, n)
+    print(f"\nBrute Force Optimal Tour: {' -> '.join(cities[i] for i in bf_path)}")
+    print(f"Minimum Cost: {bf_cost}")
+
+if __name__ == "__main__":
+    main()
